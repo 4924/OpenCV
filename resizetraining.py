@@ -24,15 +24,17 @@ import pickle
 arrays = []
 # Read image
 locate = 0
-for s in os.listdir("file_output_new"):
-    #im = cv.imread("file_output_new/"+s, cv.IMREAD_COLOR)
-    arrays.append(s)
-print sorted(arrays)
+for s in os.listdir("lolz"):
+    im = cv.imread("lolz/"+s, cv.IMREAD_COLOR)
+    #arrays.append(s)
+    #print sorted(arrays)
     #def callback(x):
     #    pass
 
+    print s
+    im = cv.resize(im, (32,32))
+    cv.imwrite("lolzss/"+s, im)
 
-    #im = cv.resize(im, (32,32))
     #im = cv.bitwise_not(im)
 
     #im2 = cv.cvtColor(im, cv.COLOR_BGR2GRAY)
@@ -84,7 +86,6 @@ print sorted(arrays)
 
     #im4 = cv.cvtColor(im6, cv.COLOR_GRAY2BGR)
     #cv.drawContours(im4, thing[0:3], -1, (0,255,0), 1)
-    #cv.imwrite("filesnormal/"+s, im)
 #cv.imshow('title', im4)
 #cv.waitKey(0)
 #cv.destroyAllWindows()
