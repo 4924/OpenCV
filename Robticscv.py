@@ -25,8 +25,8 @@ array = []
 # Read image
 locate = 0
 s = "happy"
-#for s in os.listdir("files"):
-im = cv.imread("2017/Vision Images/LED Peg/1ftH3ftD2Angle0Brightness.jpg", cv.IMREAD_COLOR)
+#for s in os.listdir("2017/Vision Images/LED Peg"):
+im = cv.imread("2017/Vision Images/LED Peg/1ftH7ftD0Angle0Brightness.jpg", cv.IMREAD_COLOR)
 
 #print s
 
@@ -48,20 +48,23 @@ im6 = cv.inRange(im4, np.array([47, 42, 105]), np.array([100, 255, 255]))
 cv.imshow('threshold', im3)
 #cv.imshow('color', im)
 cv.imshow('inRange', im6)
+kernel = np.ones((3,3),np.uint8)
+im7 = cv.morphologyEx(im6, cv.MORPH_OPEN, kernel, iterations = 1)
+cv.imshow('open', im7)
 
 
-contours, hierarchy = cv.findContours(im6,cv.RETR_TREE,cv.CHAIN_APPROX_SIMPLE)
+
+contours, hierarchy = cv.findContours(im7,cv.RETR_TREE,cv.CHAIN_APPROX_SIMPLE)
 
 
 lan = [0]*5
 thing = [0]*5
 for c in contours:
-    areaConvex = cv.contourArea(cv.convexHull(c))
-    perim = cv.arcLength(c,True)
+    areaConvex = cv.contourArea(c)
     for i in range(0,3):
-        if( areaConvex + perim >=lan[i]):
-            lan.insert(0, areaConvex + perim)
-            thing.insert(0, c)
+        if( areaConvex>=lan[i]):
+            lan.insert(i, areaConvex)
+            thing.insert(i, c)
             break
 
 
@@ -86,47 +89,48 @@ for c in contours:
 #print cv.contourArea(cv.convexHull(thing))
 #print cv.contourArea(cv.convexHull(thing))/cv.contourArea(thing)*50
 
-#im6 = cv.cvtColor(im6, cv.COLOR_GRAY2BGR)
-#cv.drawContours(im4, thing[0:3], -1, (0,255,0), 1)
+im2 = cv.cvtColor(im2, cv.COLOR_GRAY2BGR)
+print(len(thing))
+cv.drawContours(im2, contours, -1, (0,0,255), 1)
 #cv.imwrite("filesas/"+s, im4)
-#cv.imshow('title', im4)
-#cv.waitKey(0)
-#cv.destroyAllWindows()
-#
-cv.namedWindow('thresh')
-
-# Track bars
-cv.createTrackbar('lH','thresh', 0, 180, callback)
-cv.createTrackbar('lS', 'thresh', 0, 255, callback)
-cv.createTrackbar('lV', 'thresh', 0, 255, callback)
-cv.createTrackbar('uH', 'thresh', 0, 180, callback)
-cv.createTrackbar('uS', 'thresh', 0, 255, callback)
-cv.createTrackbar('uV', 'thresh', 0, 255, callback)
-
-# capture video
-
-
-while True:
-    # Getting values from track bars
-    lH = cv.getTrackbarPos('lH', 'thresh')
-    uH = cv.getTrackbarPos('uH', 'thresh')
-    lS = cv.getTrackbarPos('lS', 'thresh')
-    uS = cv.getTrackbarPos('uS', 'thresh')
-    lV = cv.getTrackbarPos('lV', 'thresh')
-    uV = cv.getTrackbarPos('uV', 'thresh')
-
-
-    lowerb = np.array([lH, lS, lV], np.uint8)
-    upperb = np.array([uH, uS, uV], np.uint8)
-
-    #print lowerb
-    #print upperb
-
-    frame = cv.inRange(im4, lowerb, upperb)
-    cv.imshow('thresh', frame)
-
-    if cv.waitKey(1) & 0xFF == ord('q'):
-        break
-
-cap.release()
+cv.imshow('title', im2)
+cv.waitKey(0)
 cv.destroyAllWindows()
+#
+#cv.namedWindow('thresh')
+#
+## Track bars
+#cv.createTrackbar('lH','thresh', 0, 180, callback)
+#cv.createTrackbar('lS', 'thresh', 0, 255, callback)
+#cv.createTrackbar('lV', 'thresh', 0, 255, callback)
+#cv.createTrackbar('uH', 'thresh', 0, 180, callback)
+#cv.createTrackbar('uS', 'thresh', 0, 255, callback)
+#cv.createTrackbar('uV', 'thresh', 0, 255, callback)
+#
+## capture video
+#
+#
+#while True:
+#    # Getting values from track bars
+#    lH = cv.getTrackbarPos('lH', 'thresh')
+#    uH = cv.getTrackbarPos('uH', 'thresh')
+#    lS = cv.getTrackbarPos('lS', 'thresh')
+#    uS = cv.getTrackbarPos('uS', 'thresh')
+#    lV = cv.getTrackbarPos('lV', 'thresh')
+#    uV = cv.getTrackbarPos('uV', 'thresh')
+#
+#
+#    lowerb = np.array([lH, lS, lV], np.uint8)
+#    upperb = np.array([uH, uS, uV], np.uint8)
+#
+#    #print lowerb
+#    #print upperb
+#
+#    frame = cv.inRange(im4, lowerb, upperb)
+#    cv.imshow('thresh', frame)
+#
+#    if cv.waitKey(1) & 0xFF == ord('q'):
+#        break
+#
+#cap.release()
+#cv.destroyAllWindows()
