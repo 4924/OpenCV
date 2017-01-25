@@ -4,7 +4,7 @@ import matplotlib.pyplot as mpl
 import os
 import math
 
-cap = cv.VideoCapture("greentraining.avi")
+cap = cv.VideoCapture("http://10.49.24.51/mjpg/video.mjpg")
 fourcc = cv.cv.CV_FOURCC(*'XVID')
 out = cv.VideoWriter('output.avi',fourcc, 15.0, (320,240))
 
