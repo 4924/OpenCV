@@ -54,6 +54,7 @@ bol, frame = cap.read()
 while bol:
 
     im = frame
+    out.write(im)
 #############################################################################################################################################
 
     im2 = cv.cvtColor(im, cv.COLOR_BGR2GRAY)
@@ -117,7 +118,6 @@ while bol:
         print( cv.contourArea(maxarray[0])/cv.contourArea(maxarray[1]))
     total = math.sqrt(math.sqrt(total))
     cv.imshow('title', im2)
-    out.write(im2)
 
     bol, frame = cap.read()
 #############################################################################################################################################
