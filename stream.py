@@ -2,11 +2,13 @@ import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as mpl
 import os
+import time
 import math
 
-cap = cv.VideoCapture("http://10.49.24.51/mjpg/video.mjpg")
-fourcc = cv.cv.CV_FOURCC(*'XVID')
-out = cv.VideoWriter('output.avi',fourcc, 15.0, (320,240))
+#cap = cv.VideoCapture("http://10.49.24.51/mjpg/video.mjpg")
+cap = cv.VideoCapture("untitled.mp4")
+#fourcc = cv.cv.CV_FOURCC(*'XVID')
+#out = cv.VideoWriter('output.avi',fourcc, 15.0, (320,240))
 
 
 def callback(x):
@@ -54,23 +56,25 @@ bol, frame = cap.read()
 while bol:
 
     im = frame
-    out.write(im)
+    #out.write(im)
 #############################################################################################################################################
-
+    im = cv.resize(im, (320,240))
+    cv.imshow('color', im)
     im2 = cv.cvtColor(im, cv.COLOR_BGR2GRAY)
     cv.imshow('gray', im2)
 
     im4 = cv.cvtColor(im, cv.COLOR_BGR2HSV)
-    im6 = cv.inRange(im4, np.array([47, 42, 40]), np.array([100, 255, 255]))
-    #cv.imshow('inRange', im6)
+    #im6 = cv.inRange(im4, np.array([47, 42, 40]), np.array([100, 255, 255]))
+    im6 = cv.inRange(im4, np.array([75, 187, 181]), np.array([99, 226, 235]))
+    cv.imshow('inRange', im6)
     kernel = np.ones((9,2),np.uint8)
     im7 = cv.morphologyEx(im6, cv.MORPH_OPEN, kernel, iterations = 1)
-    #cv.imshow('open', im7)
+    cv.imshow('open', im7)
     kernel = np.ones((4,1),np.uint8)
     im7 = cv.morphologyEx(im7, cv.MORPH_OPEN, kernel, iterations = 2)
-    #cv.imshow('double', im7)
+    cv.imshow('double', im7)
 
-    contours2, hierarchy2 = cv.findContours(im7,cv.RETR_TREE,cv.CHAIN_APPROX_SIMPLE)
+    imc, contours2, hierarchy2 = cv.findContours(im7,cv.RETR_TREE,cv.CHAIN_APPROX_SIMPLE)
     total = 0
     for c in contours2:
         total += cv.contourArea(c)
@@ -79,13 +83,13 @@ while bol:
     if(total > 0):
         kerneld = np.ones(( int(total*3), int(total*3) ),np.uint8)
         im8 = cv.dilate(im7,kerneld,iterations = 1)
-        #cv.imshow('big', im8)
+        cv.imshow('big', im8)
     else:
         im8 = im7
         print("Error!")
 
 
-    contours, hierarchy = cv.findContours(im8,cv.RETR_TREE,cv.CHAIN_APPROX_SIMPLE)
+    imc, contours, hierarchy = cv.findContours(im8,cv.RETR_TREE,cv.CHAIN_APPROX_SIMPLE)
 
 
     thing = []
@@ -120,9 +124,10 @@ while bol:
     cv.imshow('title', im2)
 
     bol, frame = cap.read()
+    time.sleep(.1);
 #############################################################################################################################################
     if cv.waitKey(1) & 0xFF == ord('q'):
         break
-out.release()
+#out.release()
 cap.release()
 cv.destroyAllWindows()
