@@ -229,16 +229,18 @@ while True:
 
     im2 = cv.cvtColor(im2, cv.COLOR_GRAY2BGR)
     cv.drawContours(im2, maxarray, -1, (0,0,255), 1)
-    if(len(maxarray) > 1):
-        #print( cv.contourArea(maxarray[0])/cv.contourArea(maxarray[1]))
-        pass
-    #total = math.sqrt(math.sqrt(total))
+    done = []
+    for m in maxarray:
+        M = cv.moments(m)
+        done.append(int(M["m10"] / (M["m00"]+0.000000000001)))
+    if len(maxarray) > 0:
+        print((((sum(done)/len(done))/320)-.5)*10)
     cv.imshow('title', im2)
 
     #im = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
     #frame = cv.inRange(im, lowerb, upperb)
     #cv.imshow('threshs', im)
-    #time.sleep(.05);
+    time.sleep(.05);
     if cv.waitKey(1) & 0xFF == ord('q'):
         break
 
