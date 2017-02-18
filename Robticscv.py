@@ -5,6 +5,26 @@ import os
 import math
 import pickle
 import time
+
+import sys
+import time
+from networktables import NetworkTables
+
+# To see messages from networktables, you must setup logging
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
+if len(sys.argv) != 2:
+    print("Error: specify an IP to connect to!")
+    exit(0)
+
+ip = sys.argv[1]
+
+NetworkTables.initialize(server=ip)
+
+sd = NetworkTables.getTable("SmartDashboard")
+
+
 #424
 #425
 #495
@@ -125,20 +145,20 @@ import time
 #    cv.imshow('title', im2)
 #    cv.waitKey(0)
 #cv.destroyAllWindows()
-cap = cv.VideoCapture("main.avi")
+cap = cv.VideoCapture("http://10.13.37.51/mjpg/video.mjpg")
 
-def callback(x):
-    pass
-
-cv.namedWindow('thresh')
-
-# Track bars
-cv.createTrackbar('lH','thresh', 0, 180, callback)
-cv.createTrackbar('lS', 'thresh', 0, 255, callback)
-cv.createTrackbar('lV', 'thresh', 0, 255, callback)
-cv.createTrackbar('uH', 'thresh', 0, 180, callback)
-cv.createTrackbar('uS', 'thresh', 0, 255, callback)
-cv.createTrackbar('uV', 'thresh', 0, 255, callback)
+#def callback(x):
+#    pass
+#
+#cv.namedWindow('thresh')
+#
+## Track bars
+#cv.createTrackbar('lH','thresh', 0, 180, callback)
+#cv.createTrackbar('lS', 'thresh', 0, 255, callback)
+#cv.createTrackbar('lV', 'thresh', 0, 255, callback)
+#cv.createTrackbar('uH', 'thresh', 0, 180, callback)
+#cv.createTrackbar('uS', 'thresh', 0, 255, callback)
+#cv.createTrackbar('uV', 'thresh', 0, 255, callback)
 
 # capture video
 
@@ -146,16 +166,16 @@ cv.createTrackbar('uV', 'thresh', 0, 255, callback)
 while True:
     # Getting values from track bars
     bol, frame = cap.read()
-    lH = cv.getTrackbarPos('lH', 'thresh')
-    uH = cv.getTrackbarPos('uH', 'thresh')
-    lS = cv.getTrackbarPos('lS', 'thresh')
-    uS = cv.getTrackbarPos('uS', 'thresh')
-    lV = cv.getTrackbarPos('lV', 'thresh')
-    uV = cv.getTrackbarPos('uV', 'thresh')
+    #lH = cv.getTrackbarPos('lH', 'thresh')
+    #uH = cv.getTrackbarPos('uH', 'thresh')
+    #lS = cv.getTrackbarPos('lS', 'thresh')
+    #uS = cv.getTrackbarPos('uS', 'thresh')
+    #lV = cv.getTrackbarPos('lV', 'thresh')
+    #uV = cv.getTrackbarPos('uV', 'thresh')
 
 
-    lowerb = np.array([lH, lS, lV], np.uint8)
-    upperb = np.array([uH, uS, uV], np.uint8)
+    #lowerb = np.array([lH, lS, lV], np.uint8)
+    #upperb = np.array([uH, uS, uV], np.uint8)
 
     #print lowerb
     #print upperb
@@ -177,9 +197,7 @@ while True:
     im6 = cv.inRange(im4, np.array([54, 166, 144]), np.array([101, 220, 255]))
     #im6 = cv.inRange(im4, lowerb, upperb)
     cv.imshow('inRange', im6)
-    #kernel = np.ones((9,2),np.uint8)
-    #im7 = cv.morphologyEx(im6, cv.MORPH_OPEN, kernel, iterations = 1)
-    #cv.imshow('open', im7)
+
     #kernel = np.ones((4,1),np.uint8)
     #im7 = cv.morphologyEx(im7, cv.MORPH_OPEN, kernel, iterations = 2)
     #cv.imshow('double', im7)
@@ -192,9 +210,12 @@ while True:
 
     #if(total > 0):
     #kerneld = np.ones(( int(total*3), int(total*3) ),np.uint8)
-    kerneld = np.ones(( 3, 3 ),np.uint8)
+    kerneld = np.ones(( 4, 4 ),np.uint8)
     im8 = cv.dilate(im6,kerneld,iterations = 1)
     cv.imshow('big', im8)
+    kernel = np.ones((9,2),np.uint8)
+    im8 = cv.morphologyEx(im8, cv.MORPH_OPEN, kernel, iterations = 1)
+    cv.imshow('open', im8)
     #else:
         #im8 = im7
         #print("Error!")
@@ -234,13 +255,19 @@ while True:
         M = cv.moments(m)
         done.append(int(M["m10"] / (M["m00"]+0.000000000001)))
     if len(maxarray) > 0:
-        print((((sum(done)/len(done))/320)-.5)*10)
+        if math.fabs(((((sum(done)/len(done))/320)**2)-.25)*2) < .6:
+            print(-((((sum(done)/len(done))/320)**2)-.25)*2)
+            sd.putNumber('cameraX', -((((sum(done)/len(done))/320)**2)-.25)*2)
+        else:
+            print(-((((sum(done)/len(done))/320)**2)-.25))
+            sd.putNumber('cameraX', -((((sum(done)/len(done))/320)**2)-.25))
+
     cv.imshow('title', im2)
 
     #im = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
     #frame = cv.inRange(im, lowerb, upperb)
     #cv.imshow('threshs', im)
-    time.sleep(.05);
+    #time.sleep(.05);
     if cv.waitKey(1) & 0xFF == ord('q'):
         break
 

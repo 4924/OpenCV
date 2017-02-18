@@ -33,6 +33,6 @@ while True:
     except KeyError:
         print('robotTime: N/A')
 
-    sd.putNumber('dsTime', i)
+    sd.putNumber('cameraX', -.5)
     time.sleep(1)
     i += 1
