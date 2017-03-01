@@ -255,12 +255,15 @@ while True:
         M = cv.moments(m)
         done.append(int(M["m10"] / (M["m00"]+0.000000000001)))
     if len(maxarray) > 0:
-        if math.fabs(((((sum(done)/len(done))/320)**2)-.25)*2) < .6:
-            print(-((((sum(done)/len(done))/320)**2)-.25)*2)
-            sd.putNumber('cameraX', -((((sum(done)/len(done))/320)**2)-.25)*2)
+        if math.fabs(((sum(done)/len(done))/320)-.5) < .2:
+            print((((sum(done)/len(done))/320)-.5)*3)
+            sd.putNumber('cameraX', -(((sum(done)/len(done))/320)-.5)*3)
+        elif math.fabs(((sum(done)/len(done))/320)-.5) < .4:
+            print((30+((sum(done)/len(done))/320)-.5)*1.5)
+            sd.putNumber('cameraX', -(((sum(done)/len(done))/320)-.5)*1.5)
         else:
-            print(-((((sum(done)/len(done))/320)**2)-.25))
-            sd.putNumber('cameraX', -((((sum(done)/len(done))/320)**2)-.25))
+            print(50+((sum(done)/len(done))/320)-.5)
+            sd.putNumber('cameraX', -(((sum(done)/len(done))/320)-.5))
 
     cv.imshow('title', im2)
 
